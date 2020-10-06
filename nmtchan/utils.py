@@ -46,10 +46,11 @@ def uploadFile(media, request) -> (str, str):
             i.save(thumbname)
         else:
             thumbname = "".join(thumbname.split(".")[:-1]) + ".png"
-            print(medianame)
             ff = FFmpeg(inputs={medianame: None}, outputs={thumbname: ['-ss', '00:00:00.500', '-vframes', '1']})
-            print(ff.cmd)
             ff.run()
+            i = Image.open(thumbname)
+            i.thumbnail((200, 200))
+            i.save(thumbname)
     except Exception as e:
         os.remove(medianame)
         raise Exception(e)
