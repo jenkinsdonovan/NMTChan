@@ -44,11 +44,9 @@ def handleBoard(board):
     try:
         thumbname, medianame = utils.uploadFile(media, request)
     except Exception as e:
-        print(e)
         flash(str(e))
         return redirect(request.url)
 
-    print("thumbname:", thumbname)
     db = database.get_db()
     query = "INSERT INTO post (parent, board, subject, body, thumb, media, last_updated, created) \
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
