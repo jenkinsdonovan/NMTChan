@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body class="bg-secondary text-center">
+    <div class="text-white pt-1">
+        <!-- header image -->
+        <div class="row justify-content-center mx-1">
+            <a href="/"><img src="/static/indexlogo.png" class="img-fluid m-1" alt="..."></a>
+        </div>
+
+        <!-- board title -->
+        <div class="row justify-content-center">
+            <h1><a href="/{{ boardname }}/">/{{ boardname }}/</a></h1>
+        </div>
+
+        {% with messages = get_flashed_messages() %}{% if messages %}
+            {% for message in messages %}
+                <p class="text-danger">{{ message }}</p>
+            {% endfor %}
+        {% endif %}{% endwith %}
+
+        <!-- Submit reply modal form -->
+        <div class="modal fade" id="replyModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark">
+                    <form action="/{{ boardname }}/{{ post.id }}/" method="POST" enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h1>New Reply</h1>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-check">
+                            {{ form.rules() }} 
+                            I have read the <a href="/rules.html">rules</a>
+                            </div>
+                            <div class="form-check">
+                            {{ form.body(class_='form-control', placeholder="Body") }}
+                            </div>
+                            <div class="form-check text-left">
+                            {{ form.media(class_='file', placeholder="media", accept="image/*,.webm,.mp4") }}
+                            </div>
+                            {{ form.replyTo(value = post.id) }}
+                            {{ form.hidden_tag() }}
+                        </div> 
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- content -->
+        <main role="main" class="row inner thread cover m-2 text-left" id="thread">
+            <!-- op -->
+            <div class="row">
+                <div id="op" class="col text-wrap">
+                    <img src="{{ post.thumb }}" class="float-left mr-3 postmedia" data-media="{{ post.media }}" data-thumb="{{ post.thumb }}">
+                    <div class="content float-left">
+                        <h1>
+                            {{ post.subject }}
+                            <button type="button" class="postmedia btn-sm btn-primary" data-id="op" data-toggle="modal" data-target="#replyModal">
+                                Reply
+                            </button>
+                        </h1>
+                        <div class="text-wrap">{{ post.body }}</div>
+                    </div>
+                </div>
+            </div>
+            {% for reply in replies %}
+                <div class="row reply m-3 w-100">
+                    <div id="re" class="col-auto text-wrap border border-dark p-2 pr-5">
+                        {% if reply.thumb %}
+                        <img src="{{ reply.thumb }}" class="float-left mr-3 postmedia" data-media="{{ reply.media }}" data-thumb="{{ reply.thumb }}">
+                        {% endif %}
+                        <div class="content float-left">
+                            <h3>
+                                No. {{ reply.id }}
+                                <button type="button" class="post btn-sm btn-primary" data-id="${item.id}" data-toggle="modal" data-target="#replyModal">
+                                    Reply
+                                </button>
+                            </h3>
+                            <div class="text-wrap">{{ reply.body }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </main>
+
+        <script>
+            $(document).on("click", ".post", function () {
+                var parent = $(this).data("id")
+                if (parent != "op") {
+                    $(".modal-body #replyBody").val(">>>" + parent + "\r\n");
+                } else {
+                    $(".modal-body #replyBody").val("");
+                }
+            })
+
+
+            $(".postmedia").click(function() {
+                console.log("here")
+                if ($(this).data("media").indexOf(".webm") != -1 || $(this).data("media").indexOf(".mp4") != -1) { // image
+                    if ($(this).prop("tagName") == "IMG") {
+                        var thumb = $(this).data("thumb")
+                        var media = $(this).data("media")
+                        $(this).replaceWith(`<video controls autoplay loop class="float-left mr-3 postmedia"><source src='${media}'></video>`)
+                    } else {
+                        var thumb = $(this).data("thumb")
+                        var media = $(this).data("media")
+                        $(this).replaceWith(`<img src="${thumb}" class="float-left mr-3 postmedia" data-media="${media}" data-thumb="${thumb}">`)
+                    }
+                } else {
+                    if ($(this).data("media") == $(this).attr("src")) {
+                        $(this).attr("src", $(this).data("thumb"));
+                    } else {
+                        $(this).attr("src", $(this).data("media"));
+                    }
+                }
+            })
+
+            /*
+            function toggle(i, media, thumb) {
+                var ogtag = `<img src="${thumb}" class="float-left mr-3" onclick="toggle(this, '${media}', '${thumb}');">`
+                console.log($(i))
+
+                var src = $(i).attr("src");
+                if (media.indexOf(".webm") == -1) {
+                    if (src.indexOf("_thumb") == -1) {
+                        $(i).attr("src", thumb)
+                    } else {
+                        $(i).attr("src", media)
+                    }
+                } else {
+                    if (src.indexOf("_thumb") == -1) {
+                        console.log("replacing with media")
+                        //$(i).replaceWith(`<video controls onclick="toggle(this, '${media}', '${thumb}');><source src='${media}' type="video/webm"></video>`)
+                        $(i).replaceWith("test");
+                    } else {
+                        console.log("replacing with thumb")
+                        $(i).replaceWith(ogtag)
+                    }
+                }
+            }
+            */
+        </script>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body class="bg-secondary text-center">
+    <form class="signin-form" action="/signup" method="POST">
+        <h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
+
+        {% with messages = get_flashed_messages() %}{% if messages %}
+            <script>alert('{{ messages[0] }}');</script>
+        {% endif %}{% endwith %}
+
+        {{ form.hidden_tag() }}
+        {{ form.username(size=32, class_='form-control', placeholder="username") }}
+
+        {% if form.password.errors %}{% for error in form.password.errors %}
+            <div class="error text-danger">
+            {{ form.password(size=32, class_='form-control', placeholder="password") }}
+            {{ form.confirm(size=32, class_='form-control', placeholder="confirm") }}
+            </div>
+        {% endfor %}{% else %}
+            {{ form.password(size=32, class_='form-control', placeholder="password") }}
+            {{ form.confirm(size=32, class_='form-control', placeholder="confirm") }}
+        {% endif %}
+        
+        {{ form.access(size=32, class_='form-control', placeholder="access code") }}
+        {{ form.rules() }} 
+        I have read the <a href="/rules.html">rules</a>
+
+        <div class="form-group justify-content-between">
+            <button class="btn btn-secondary" type="button" onclick="location.href = '/login'">Sign In</button>
+            {{ form.submit(class_='btn btn-primary') }}
+        </div>
+    </form>
+</body>
+{% endblock %}

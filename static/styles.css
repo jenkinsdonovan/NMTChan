@@ -1,0 +1,34 @@
+body {
+    overflow-x: hidden;
+}
+
+.signin-form {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.index-container {
+    margin: auto;
+    max-width: 850px;
+}
+
+/* red text on signup field error */
+.error input::-webkit-input-placeholder {
+    color:red!important;
+}
+.error input::-moz-placeholder {
+    color:red!important;
+}
+.error input::-ms-placeholder {
+    color:red!important;
+}
+.error input::placeholder {
+    color:red!important;
+}
+
+#thread img {
+    max-width: 80vw;
+    max-height: 80vh
+}

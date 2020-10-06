@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<body class="bg-secondary text-center">
+    <div class="index-container text-white p-1">
+        <!-- header image -->
+        <div class="row justify-content-center mx-1">
+            <a href="/"><img src="{{ url_for('static',filename='indexlogo.png') }}" class="img-fluid m-1" alt="..."></a>
+        </div>
+
+        <main role="main" class="inner cover bg-dark mt-2 pb-2">
+            <h2 class="cover-heading pt-1"><u>Registered Accounts</u></h1>
+            {% for account in accounts %}
+                <p class="mb-0">{{ account.username }}</p>
+            {% endfor %}
+        </main>
+
+        <main role="main" class="inner cover bg-dark mt-2 pb-2">
+            <h2 class="cover-heading pt-1"><u>Access Codes</u>
+                <button type="button" class="btn-sm btn-secondary" onclick="location.href='/mod/newCode'">New Code</button>
+            </h1>
+            {% for code in codes %}
+                <p class="mb-0">{{ code.accessCode }}</p>
+            {% endfor %}
+        </main>
+    </div>
+</body>
+{% endblock %}
