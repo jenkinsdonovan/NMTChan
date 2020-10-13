@@ -1,7 +1,6 @@
 from flask import current_app, g
 from flask.cli import with_appcontext
 from werkzeug.security import generate_password_hash
-from nmtchan import config
 import sqlite3, os
 
 def get_db():
@@ -30,8 +29,9 @@ def init_app(app):
             g.db.executescript(f.read().decode('utf8'))
 
         # create admin user
-        username = config.Config.admin["username"]
-        password = generate_password_hash(config.Config.admin["password"])
+        g.db.execute("DELETE FROM user WHERE level=1")
+        username = app.config["admin"]["username"]
+        password = generate_password_hash(app.config["admin"]["password"])
         user = g.db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
         if user is None:
             query = 'INSERT INTO user (username, password, level) VALUES (?, ?, ?)'

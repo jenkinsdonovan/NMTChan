@@ -3,3 +3,4 @@ instance
 .DS_Store
 .vscode
 *pycache*
+config.cfg

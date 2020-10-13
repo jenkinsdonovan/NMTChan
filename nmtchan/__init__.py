@@ -6,15 +6,35 @@ TODO: Make "parent" SQL field a string, containing comma separated
 """
 
 from flask import Flask, send_from_directory
-from nmtchan import config, db, index, login, board, post, mod
-import os
+from nmtchan import db, index, login, board, post, mod
+import os, json
 
 # declare application
 app = Flask(__name__, instance_relative_config=True, template_folder='../templates')
-app.config.from_object(config.Config)
 app.config['DATABASE'] = os.path.join(app.instance_path, 'nmtchan.sqlite')
 app.config['MEDIA_FOLDER'] = os.path.join(app.instance_path, 'media/')
 app.config['STATIC_FOLDER'] = os.path.join('../static')
+
+try:
+    with open("./config.cfg", "r") as f:
+        data = json.load(f)
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or data['secret_key']
+        app.config['admin'] = data['admin']
+except FileNotFoundError:
+    print("Creating a config file. Change default values ASAP")
+    content = {
+        "secret_key":"change_me",
+        "admin":{
+            "username":"admin",
+            "password":"password"
+        }
+    }
+    with open("./config.cfg", "w+") as f:
+        j = json.dumps(content, indent=4)
+        f.write(j + "\n")
+except Exception as e:
+    print(e)
+    exit()
 
 # initialize application
 db.init_app(app)
