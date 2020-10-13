@@ -32,6 +32,8 @@ except FileNotFoundError:
     with open("./config.cfg", "w+") as f:
         j = json.dumps(content, indent=4)
         f.write(j + "\n")
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or content['secret_key']
+    app.config['admin'] = content['admin']
 except Exception as e:
     print(e)
     exit()
