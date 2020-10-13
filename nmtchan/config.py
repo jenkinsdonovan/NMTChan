@@ -1,3 +1,7 @@
+"""
+TODO: make flask look in a .gitignored config file and create one 
+if not exists
+"""
 import os
 from flask import current_app
 
