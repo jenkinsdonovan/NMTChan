@@ -20,7 +20,7 @@ def handleIndex():
     sfws = db.execute("SELECT link FROM board WHERE category!='nsfw'").fetchall()
     sfws = [dict(i)["link"][1:-1] for i in sfws]
 
-    query = "SELECT * FROM post WHERE parent=0 AND board IN (%s)" % ','.join('?'*len(sfws))
+    query = "SELECT * FROM post WHERE parent=0 AND board IN (%s) LIMIT 10" % ','.join('?'*len(sfws))
     items = db.execute(query, sfws).fetchall()
     
     posts = [dict(i) for i in items]
