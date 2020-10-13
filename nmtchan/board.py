@@ -53,6 +53,15 @@ def handleBoard(board):
     db.execute(query, (0, board, subject, body, thumbname, medianame, created, created))
     db.commit()
 
+    query = "SELECT * FROM post WHERE board=? AND parent=0 ORDER BY last_updated ASC"
+    rows = db.execute(query, (board,)).fetchall()
+    rows = [dict(i) for i in rows]
+    while len(rows) > 20:
+        p = rows.pop(0)
+        query = "DELETE FROM post WHERE id=?"
+        db.execute(query, (p["id"],))
+        db.commit()
+
     i = db.execute("SELECT * FROM post WHERE thumb=? AND created=?", (thumbname, created)).fetchone()
 
     return redirect(request.url + str(i["id"]))
