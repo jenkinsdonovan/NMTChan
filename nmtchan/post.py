@@ -1,3 +1,10 @@
+"""
+TODO: Make "parent" SQL field a string, containing comma separated
+    parents to the comment, allowing one comment to be a reply to 
+    many. Or, add a table holding holding post relationships. I.e, 
+    column 1 is post ID, column 2 is parent ID.
+"""
+
 from flask import Blueprint, render_template, request, redirect, flash
 from nmtchan import auth, utils
 from nmtchan import db as database

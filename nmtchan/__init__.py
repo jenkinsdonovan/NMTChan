@@ -1,10 +1,3 @@
-"""
-TODO: Make "parent" SQL field a string, containing comma separated
-    parents to the comment, allowing one comment to be a reply to 
-    many. Or, add a table holding holding post relationships. I.e, 
-    column 1 is post ID, column 2 is parent ID.
-"""
-
 from flask import Flask, send_from_directory
 from nmtchan import db, index, login, board, post, mod
 import os, json
@@ -15,6 +8,7 @@ app.config['DATABASE'] = os.path.join(app.instance_path, 'nmtchan.sqlite')
 app.config['MEDIA_FOLDER'] = os.path.join(app.instance_path, 'media/')
 app.config['STATIC_FOLDER'] = os.path.join('../static')
 
+# load config from file. Create if not exist
 try:
     with open("./config.cfg", "r") as f:
         data = json.load(f)
@@ -30,8 +24,7 @@ except FileNotFoundError:
         }
     }
     with open("./config.cfg", "w+") as f:
-        j = json.dumps(content, indent=4)
-        f.write(j + "\n")
+        f.write(json.dumps(content, indent=4) + "\n")
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or content['secret_key']
     app.config['admin'] = content['admin']
 except Exception as e:

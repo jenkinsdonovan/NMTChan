@@ -22,21 +22,21 @@ def init_app(app):
 
     # connect to db
     with app.app_context():
-        get_db()
+        db = get_db()
 
         # create tables
         with app.open_resource('schema.sql') as f:
-            g.db.executescript(f.read().decode('utf8'))
+            db.executescript(f.read().decode('utf8'))
 
         # create admin user
-        g.db.execute("DELETE FROM user WHERE level=1")
+        db.execute("DELETE FROM user WHERE level=1")
         username = app.config["admin"]["username"]
         password = generate_password_hash(app.config["admin"]["password"])
-        user = g.db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
+        user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
         if user is None:
             query = 'INSERT INTO user (username, password, level) VALUES (?, ?, ?)'
             level = 1
-            g.db.execute(query, (username, password, level))
-            g.db.commit()
+            db.execute(query, (username, password, level))
+            db.commit()
 
     app.teardown_appcontext(close_db)
