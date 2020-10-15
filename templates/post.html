@@ -38,7 +38,7 @@
                             <div class="form-check text-left">
                             {{ form.media(class_='file', placeholder="media", accept="image/*,.webm,.mp4") }}
                             </div>
-                            {{ form.replyTo(value = post.id) }}
+                            {{ form.replyTo(value = post.id, id_='form-replyTo') }}
                             {{ form.hidden_tag() }}
                         </div> 
                         <div class="modal-footer">
@@ -76,7 +76,7 @@
                         <div class="content float-left">
                             <h3>
                                 No. {{ reply.id }}
-                                <button type="button" class="post btn-sm btn-primary" data-id="${item.id}" data-toggle="modal" data-target="#replyModal">
+                                <button type="button" class="post btn-sm btn-primary replyButton" data-id="{{ reply.id }}" data-toggle="modal" data-target="#replyModal">
                                     Reply
                                 </button>
                             </h3>
@@ -118,6 +118,13 @@
                     }
                 }
             })
+
+            $('.replyButton').on('click', function(e) {
+                console.log("here");
+                var id = $(this).data('id');
+                console.log(id);
+                $("#replyTo").val(id);
+            });
 
             /*
             function toggle(i, media, thumb) {

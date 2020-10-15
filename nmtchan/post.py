@@ -38,8 +38,16 @@ def handlePost(board, post):
     if request.method == "GET":
         form.media(accept='image/*,.webm')
         db = database.get_db()
+
         replies = db.execute('SELECT * FROM post WHERE parent = ?', (post,)).fetchall()
         replies = [dict(i) for i in replies]
+
+        for reply in replies:
+            print(reply["id"])
+            childrenIDs = db.execute('SELECT * FROM reply WHERE opID = ?', (reply["id"],)).fetchall()
+            childrenIDs = [dict(i) for i in childrenIDs]
+            print(childrenIDs)
+
         post = db.execute('SELECT * FROM post WHERE id = ?', (post,)).fetchone()
         return render_template("post.html", boardname=board, post=post, replies=replies, form=form)
 
@@ -50,9 +58,10 @@ def handlePost(board, post):
     rules = form.rules.data
     body = form.body.data
     media = form.media.data
-    replyTo = form.replyTo.data # currently unused
+    replyTo = int(form.replyTo.data)
     parent = post
     created = datetime.now().timestamp()
+    print("REPLYTO:", replyTo)
 
     if not rules:
         flash("rules required")
@@ -69,14 +78,13 @@ def handlePost(board, post):
     db = database.get_db()
     query = "INSERT INTO post (parent, board, subject, body, thumb, media, last_updated, created) \
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    db.execute(query, (parent, board, "", body, thumbname, medianame, created, created))
+    t = db.execute(query, (parent, board, "", body, thumbname, medianame, created, created))
 
     query = "UPDATE post SET last_updated = ? WHERE id = ?"
     db.execute(query, (created, parent))
 
+    query = "INSERT INTO reply (opID, replyID) VALUES (?, ?)"
+    db.execute(query, (replyTo, t.lastrowid))
     db.commit()
 
-
     return redirect(request.url)
-
-    

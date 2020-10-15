@@ -50,7 +50,7 @@ def handleBoard(board):
     db = database.get_db()
     query = "INSERT INTO post (parent, board, subject, body, thumb, media, last_updated, created) \
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    db.execute(query, (0, board, subject, body, thumbname, medianame, created, created))
+    i = db.execute(query, (0, board, subject, body, thumbname, medianame, created, created))
     db.commit()
 
     query = "SELECT * FROM post WHERE board=? AND parent=0 ORDER BY last_updated ASC"
@@ -62,6 +62,4 @@ def handleBoard(board):
         db.execute(query, (p["id"],))
         db.commit()
 
-    i = db.execute("SELECT * FROM post WHERE thumb=? AND created=?", (thumbname, created)).fetchone()
-
-    return redirect(request.url + str(i["id"]))
+    return redirect(request.url + str(i.lastrowid))
