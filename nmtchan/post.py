@@ -12,12 +12,13 @@ from nmtchan import db as database
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FileField, HiddenField
 from wtforms.validators import DataRequired
+from wtforms.widgets import TextArea
 
 from datetime import datetime
 
 class ThreadForm(FlaskForm):
     rules = BooleanField('I have read the rules', validators=[DataRequired()])
-    body = StringField('Body', validators=[])
+    body = StringField('Body', validators=[], widget=TextArea())
     media = FileField('Media', validators=[])
     replyTo = HiddenField()
 

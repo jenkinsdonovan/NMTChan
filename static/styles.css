@@ -32,3 +32,16 @@ body {
     max-width: 80vw;
     max-height: 80vh
 }
+
+#replyBox {
+    top: 50px;
+    right: 0px;
+    position: fixed;
+    min-width: 300px;
+}
+
+.replyID {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+}
