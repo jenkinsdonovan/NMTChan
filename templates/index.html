@@ -66,18 +66,10 @@
         <!-- overboard -->
         <main role="main" class="inner cover bg-dark mt-2">
             <h2 class="cover-heading pt-1"><u>Recent Posts</u></h1>
-            <div class="row inner cover p-3">
-                {% for post in posts %}
-                <div class="col-md-2 border border-dark m-2 p-2" id="${item.id}">
-                    <a href="/{{ post.board }}/{{ post.id }}">
-                        <img class="img-fluid" src="{{ post.thumb }}">
-                    </a>
-                    <h5>{{ post.subject }}</h5>
-                    <p style="max-height: 50px; overflow: hidden;"><small>{{ post.body }}</small></p>
-                </div>
-                {% endfor %}
-            </div>
+            <div class="row inner cover p-3" id="postContainer"></div>
         </main>
     </div>
+
+    <script src="{{ url_for('static',filename='js/getRecents.js') }}"></script>
 </body>
 {% endblock %}

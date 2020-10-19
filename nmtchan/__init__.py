@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory
-from nmtchan import db, index, login, board, post, mod
+from nmtchan import db, index, login, board, post, mod, api
 import os, json
 
 # declare application
@@ -40,10 +40,15 @@ app.register_blueprint(login.bp)
 app.register_blueprint(board.bp)
 app.register_blueprint(post.bp)
 app.register_blueprint(mod.bp)
+app.register_blueprint(api.bp)
 
 @app.route("/static/<f>")
 def handleStatic(f):
     return send_from_directory(app.config['STATIC_FOLDER'], f)
+
+@app.route("/static/js/<f>")
+def handleJS(f):
+    return send_from_directory(app.config['STATIC_FOLDER'] + "/js/", f)
 
 @app.route("/instance/media/<f>")
 def handleMedia(f):
