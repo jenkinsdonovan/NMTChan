@@ -59,17 +59,28 @@
         </div>
 
         <!-- board grid -->
-        <div class="row inner cover p-5">
-            {% for post in posts %}
-            <div class="col-md-2 border border-dark m-2 p-2" id="${item.id}">
-                <a href="/{{ post.board }}/{{ post.id }}">
-                    <img class="img-fluid" src="{{ post.thumb }}">
-                </a>
-                <h5>{{ post.subject }}</h5>
-                <p style="max-height: 50px; overflow: hidden;"><small>{{ post.body }}</small></p>
-            </div>
-            {% endfor %}
-        </div>
+        <div class="row inner cover p-5" id="postContainer"></div>
+
+        <script>
+            $(document).ready(function() {
+                $.getJSON( "/api/v1/posts?board={{ boardname }}", function(resp) {
+                    if (resp.success == "failure") {
+                        return;
+                    }
+                    $.each(JSON.parse(resp.data), function(index, post) {
+                        $("#postContainer").append(`
+                            <div class="col-md-2 border border-dark m-2 p-2" id="${post.id}">
+                                <a href="/${post.board}/${post.id}">
+                                    <img class="img-fluid" src="${post.thumb}">
+                                </a>
+                                <h5>${post.subject}</h5>
+                                <p style="max-height: 50px; overflow: hidden;"><small>${post.body}</small></p>
+                            </div>
+                        `);
+                    });
+                });
+        });
+    </script>
 
     </div>
 </body>

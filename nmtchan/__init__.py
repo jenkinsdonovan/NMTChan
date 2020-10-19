@@ -46,10 +46,6 @@ app.register_blueprint(api.bp)
 def handleStatic(f):
     return send_from_directory(app.config['STATIC_FOLDER'], f)
 
-@app.route("/static/js/<f>")
-def handleJS(f):
-    return send_from_directory(app.config['STATIC_FOLDER'] + "/js/", f)
-
 @app.route("/instance/media/<f>")
 def handleMedia(f):
     return send_from_directory(app.config['MEDIA_FOLDER'], f)

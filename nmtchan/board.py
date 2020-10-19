@@ -22,11 +22,7 @@ def handleBoard(board):
 
     if request.method == "GET":
         form.media(accept='image/*,.webm')
-        db = database.get_db()
-        items = db.execute('SELECT * FROM post WHERE board = ? AND parent = 0', (board,)).fetchall()
-        posts = [dict(i) for i in items]
-        posts = sorted(posts, key = lambda i: i['last_updated'], reverse=True) 
-        return render_template("board.html", boardname=board, posts=posts, form=form)
+        return render_template("board.html", boardname=board, form=form)
 
     if not form.validate_on_submit():
         flash("invalid form fields")
