@@ -43,10 +43,8 @@ def handlePost(board, post):
         replies = [dict(i) for i in replies]
 
         for reply in replies:
-            print(reply["id"])
             childrenIDs = db.execute('SELECT * FROM reply WHERE opID = ?', (reply["id"],)).fetchall()
             childrenIDs = [dict(i) for i in childrenIDs]
-            print(childrenIDs)
 
         post = db.execute('SELECT * FROM post WHERE id = ?', (post,)).fetchone()
         return render_template("post.html", boardname=board, post=post, replies=replies, form=form)
@@ -61,7 +59,6 @@ def handlePost(board, post):
     replyTo = int(form.replyTo.data)
     parent = post
     created = datetime.now().timestamp()
-    print("REPLYTO:", replyTo)
 
     if not rules:
         flash("rules required")
