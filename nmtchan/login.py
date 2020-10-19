@@ -42,7 +42,6 @@ def handleLogin():
     query = "SELECT * FROM user WHERE username = ?"
     user = db.execute(query, (username,)).fetchone()
     if user and check_password_hash(user["password"], password):
-        session.clear()
         session['user_id'] = user["id"]
         return redirect("/")
 

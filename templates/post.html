@@ -29,12 +29,11 @@
                 I have read the <a href="/rules.html">rules</a>
                 </div>
                 <div class="form-check">
-                {{ form.body(class_='form-control', placeholder="Body", cols="35", rows="4") }}
+                {{ form.body(class_='form-control', id="replyText", placeholder="Body", cols="35", rows="4") }}
                 </div>
                 <div class="form-check text-left">
                 {{ form.media(class_='file', placeholder="media", accept="image/*,.webm,.mp4") }}
                 </div>
-                {{ form.replyTo(value = post.id, id_='form-replyTo') }}
                 {{ form.hidden_tag() }}
             </div> 
             <div class="modal-footer">
@@ -114,10 +113,12 @@
 
             $(".replyID").click(function() {
                 $("#replyBox").removeAttr("hidden");
+                $("#replyText").append(">>" + $(this).attr('id') + "&#13;&#10;");
             });
 
             function closeReply(element) {
                 $(element).attr("hidden", "hidden");
+                //$("#replyText").val(""); for some reason, when i have this and they open a new text box, text wont be appended
             }
 
             /*

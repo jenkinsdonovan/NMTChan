@@ -57,7 +57,6 @@ def handlePost(board, post):
     rules = form.rules.data
     body = form.body.data
     media = form.media.data
-    replyTo = int(form.replyTo.data)
     parent = post
     created = datetime.now().timestamp()
 
@@ -81,8 +80,10 @@ def handlePost(board, post):
     query = "UPDATE post SET last_updated = ? WHERE id = ?"
     db.execute(query, (created, parent))
 
+    """ for replyTo, parse the body and search for >>id. add replies
     query = "INSERT INTO reply (opID, replyID) VALUES (?, ?)"
     db.execute(query, (replyTo, t.lastrowid))
     db.commit()
+    """
 
     return redirect(request.url)
