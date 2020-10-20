@@ -5,12 +5,12 @@
 from flask import Blueprint, request
 from nmtchan import auth
 from nmtchan import db as database
-import json
+import json, collections
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
 @bp.route("/posts", methods=['GET'])
-#@auth.require_login
+@auth.require_login
 def apiRecents():
     db = database.get_db()
     board = request.args.get("board", "all")
@@ -34,3 +34,20 @@ def apiRecents():
         posts = [i for i in posts if i["board"] not in boards]
     
     return {"status": "success", "data": json.dumps(posts)}
+
+@bp.route("/boards", methods=['GET'])
+def getBoards():
+    db = database.get_db()
+    items = db.execute('SELECT * FROM board').fetchall()
+    items = [dict(i) for i in items]
+
+    boards = {}
+    for i in items:
+        if i["category"] in boards:
+            boards[i["category"]].append(i)
+        else:
+            boards[i["category"]] = [i]
+
+    sortedBoards = collections.OrderedDict(sorted(boards.items()))
+
+    return {"status": "success", "data": json.dumps(sortedBoards)}

@@ -36,18 +36,6 @@
         <main role="main" class="inner cover bg-dark mt-2">
             <h2 class="cover-heading pt-1"><u>Boards</u></h1>
             <div class="row text-left pl-2 pb-2" id="boards">
-                {% for category, boards in boardlist.items() %}
-                    <div class="col-md-3 col-4 borderless">
-                        <h6 class="lead font-weight-bold">{{ category }}</h6>
-                        <ul class="list-group" style="list-style-type: none;">
-                            {% for board in boards %}
-                                <li>
-                                    <a href="{{ board.link }}" class="text-secondary">{{ board.name }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endfor %}
             </div>
         </main>
 
@@ -60,7 +48,31 @@
 
     <script>
         $(document).ready(function() {
-            $.getJSON( "/api/v1/posts?nsfw=0", function(resp) {
+            // get boards
+            $.getJSON("/api/v1/boards", function(resp) {
+                if (resp.success == "failure") {
+                    return;
+                }   
+                $.each(JSON.parse(resp.data), function(key, val) {
+                    $("#boards").append(`
+                        <div class="col-md-3 col-4 borderless">
+                            <h6 class="lead font-weight-bold">${key}</h6>
+                            <ul class="list-group" id="category-${key}" style="list-style-type: none;"></ul>
+                        </div>
+                    `);
+                    $.each(val, function(index, b) {
+                        console.log(key, "-->", b);
+                        $("#category-" + key).append(`
+                            <li>
+                                <a href="${b.link}" class="text-secondary">${b.name}</a>
+                            </li>
+                        `);
+                    });
+                });
+            });
+
+            // get recent posts
+            $.getJSON("/api/v1/posts?nsfw=0", function(resp) {
                 if (resp.success == "failure") {
                     return;
                 }
