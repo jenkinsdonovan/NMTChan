@@ -50,6 +50,7 @@ VALUES
     ("math", "classes", "/math/"),
     ("chem", "classes", "/chem/"),
 
+    ("random", "nsfw", "/b/"),
     ("adult gif", "nsfw", "/gif/"),
     ("women", "nsfw", "/w/"),
     ("men", "nsfw", "/m/");
