@@ -7,6 +7,14 @@ from nmtchan import auth
 from nmtchan import db as database
 import json, collections
 
+html_escape_table = {
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&apos;",
+    ">": "&gt;",
+    "<": "&lt;",
+}
+
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
 @bp.route("/posts", methods=['GET'])
@@ -25,7 +33,11 @@ def apiRecents():
     else:
         query = "SELECT * FROM post WHERE parent=0 AND board=? ORDER BY last_updated ASC LIMIT ?"
         posts = db.execute(query, (board,limit)).fetchall()
+
     posts = [dict(i) for i in posts]
+    for post in posts:
+        post["subject"] = "".join(html_escape_table.get(c,c) for c in post["subject"])
+        post["body"] = "".join(html_escape_table.get(c,c) for c in post["body"])
 
     if nsfw != "1":
         query = "SELECT * FROM board WHERE category=?"

@@ -9,6 +9,14 @@ from wtforms.widgets import TextArea
 
 from datetime import datetime
 
+html_escape_table = {
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&apos;",
+    ">": "&gt;",
+    "<": "&lt;",
+}
+
 class ThreadForm(FlaskForm):
     rules = BooleanField('I have read the rules', validators=[DataRequired()])
     subject = StringField('Subject', validators=[])
@@ -58,5 +66,8 @@ def handleBoard(board):
         query = "DELETE FROM post WHERE id=?"
         db.execute(query, (p["id"],))
         db.commit()
+
+    for row in rows:
+        row["body"] = "".join(html_escape_table.get(c,c) for c in row["body"])
 
     return redirect(request.url + str(i.lastrowid))

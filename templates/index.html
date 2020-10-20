@@ -61,7 +61,6 @@
                         </div>
                     `);
                     $.each(val, function(index, b) {
-                        console.log(key, "-->", b);
                         $("#category-" + key).append(`
                             <li>
                                 <a href="${b.link}" class="text-secondary">${b.name}</a>
@@ -77,6 +76,7 @@
                     return;
                 }
                 $.each(JSON.parse(resp.data), function(index, post) {
+                    console.log(post);
                     $("#postContainer").append(`
                         <div class="col-md-2 border border-dark m-2 p-2" id="${post.id}">
                             <a href="/${post.board}/${post.id}">

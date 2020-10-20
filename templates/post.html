@@ -101,13 +101,6 @@
                 }
             })
 
-            $('.replyButton').on('click', function(e) {
-                console.log("here");
-                var id = $(this).data('id');
-                console.log(id);
-                $("#replyTo").val(id);
-            });
-
             $(".replyID").click(function() {
                 $("#replyBox").removeAttr("hidden");
                 if ($(this).attr('id') != "op") {
