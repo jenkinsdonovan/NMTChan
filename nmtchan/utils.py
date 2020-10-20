@@ -1,6 +1,6 @@
 from flask import current_app
 from werkzeug.utils import secure_filename
-import tempfile, os
+import tempfile, os, html
 from PIL import Image
 from ffmpy import FFmpeg
  
@@ -58,3 +58,17 @@ def uploadFile(media, request) -> (str, str):
     medianame = "/instance" + medianame.split("/instance")[-1]
     thumbname = "/instance" + thumbname.split("/instance")[-1]
     return thumbname, medianame
+
+def sanitize(text):
+    html_escape_table = {
+        "&": "&amp;",
+        '"': "&quot;",
+        "'": "&apos;",
+        ">": "&gt;",
+        "<": "&lt;",
+    }
+    
+    print("before:", text)
+    text = html.escape(text)
+    print("after:", text)
+    return text

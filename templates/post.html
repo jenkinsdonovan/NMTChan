@@ -19,36 +19,10 @@
             {% endfor %}
         {% endif %}{% endwith %}
 
-        <!-- content -->
         <main role="main" class="row inner thread cover m-2 text-left" id="thread">
-            <!-- op -->
-            <div class="row">
-                <div id="op" class="col text-wrap">
-                    <img src="{{ post.thumb }}" class="float-left mr-3 postmedia" data-media="{{ post.media }}" data-thumb="{{ post.thumb }}">
-                    <div class="content float-left">
-                        <h3>
-                            {{ post.subject }} <small class="text-info">No. <a id="op" class="replyID">{{ post.id }}</a></small>
-                        </h3>
-                        <div class="text-wrap bodyText">{{ post.body }}</div>
-                    </div>
-                </div>
-            </div>
-            {% for reply in replies %}
-                <div class="row reply m-1 ml-3 w-100">
-                    <div id="re" class="col-auto text-wrap border border-dark p-2 pr-5">
-                        {% if reply.thumb %}
-                        <img src="{{ reply.thumb }}" class="float-left mr-3 postmedia" data-media="{{ reply.media }}" data-thumb="{{ reply.thumb }}">
-                        {% endif %}
-                        <div class="content float-left">
-                            <h3>
-                                <small class="text-info">No. <a id="{{ reply.id }}" class="replyID">{{ reply.id }}</a></small>
-                            </h3>
-                            <div class="text-wrap bodyText">{{ reply.body }}</div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            <div class="row" id="opcontainer"></div>
         </main>
+
 
         <form action="/{{ boardname }}/{{ post.id }}/" method="POST" enctype="multipart/form-data" class="bg-dark col-sm-3" id="replyBox" hidden>
             <div class="modal-body">
@@ -71,6 +45,57 @@
         </form>
 
         <script>
+            $(document).ready(function() {
+                id = "{{ post.id }}"
+                $.getJSON("/api/v1/post?id="+id, function(resp) {
+                    if (resp.status != "success") {
+                        return
+                    }
+                    data = JSON.parse(resp.data)
+
+                    data.op.body = convertGreentext(data.op.body)
+                    data.op.body = convertHyperlink(data.op.body)
+                    
+                    $("#opcontainer").append(`
+                        <div class="col text-wrap" id="op">
+                            <img src="${data.op.thumb}" class="float-left mr-3 postmedia" data-media="${data.op.media}" data-thumb="${data.op.thumb}" onclick="togmedia(this);">
+                            <div class="content float-left">
+                                <h3>
+                                    ${data.op.subject}
+                                    <small class="text-info"> No. <a id="op" class="replyID" onclick="reply(this);">${data.op.id}</a></small>
+                                </h3>
+                                <div class="text-wrap bodyText">${data.op.body}</div>
+                            </div>
+                        </div>
+                    `);
+
+                    $.each(data.replies, function(i, r) {
+                        r.body = convertGreentext(r.body)
+                        r.body = convertHyperlink(r.body)
+
+                        item = [
+                            `<div class="row reply m-1 ml-3 w-100">`,
+                            `<div id="re" class="col-auto text-wrap border border-dark p-2 pr-5">`
+                        ]
+                        if (r.thumb) {
+                            item.push(`
+                            <img src="${r.thumb}" class="float-left mr-3 postmedia" data-media="${r.media}" data-thumb="${r.thumb}" onclick="togmedia(this);">
+                            `);
+                        }
+                        item.push(`
+                            <div class="content float-left">
+                            <h3>
+                            <small class="text-info">No. <a id="${r.id}" class="replyID" onclick="reply(this);">${r.id}</a></small>
+                            </h3>
+                            <div class="text-wrap bodyText">${r.body}</div>
+                            </div></div></div>
+                        `);
+                        $("#thread").append(item.join(''));
+                    });
+                });
+
+            });
+
             $(document).on("click", ".post", function () {
                 var parent = $(this).data("id")
                 if (parent != "op") {
@@ -80,61 +105,57 @@
                 }
             })
 
-            $(".postmedia").click(function() {
-                console.log("here")
-                if ($(this).data("media").indexOf(".webm") != -1 || $(this).data("media").indexOf(".mp4") != -1) { // image
-                    if ($(this).prop("tagName") == "IMG") {
-                        var thumb = $(this).data("thumb")
-                        var media = $(this).data("media")
-                        $(this).replaceWith(`<video controls autoplay loop class="float-left mr-3 postmedia"><source src='${media}'></video>`)
+            function convertGreentext(t) {
+                text = t.split("\n")
+                for(i = 0; i < text.length; i++) {
+                    if (text[i].length > 2) {
+                        if (text[i].indexOf("&gt;") == 0 && text[i].substring(4,8) != "&gt;") {
+                            text[i] = "<div class='text-success'>" + text[i] + "</div>";
+                        }
+                    }
+                }
+                return text.join("<br/>")
+            }
+
+            function convertHyperlink(text) {
+                var urlRegex = /(https?:\/\/[^\s]+)/g;
+                text = text.replace(urlRegex, function(url) {
+                    return '<a target="_blank" href="' + url + '">' + url + '</a>';
+                });
+                return text
+            }
+
+            function togmedia(e) {
+                if ($(e).data("media").indexOf(".webm") != -1 || $(e).data("media").indexOf(".mp4") != -1) { // image
+                    if ($(e).prop("tagName") == "IMG") {
+                        var thumb = $(e).data("thumb")
+                        var media = $(e).data("media")
+                        $(e).replaceWith(`<video controls autoplay loop class="float-left mr-3 postmedia"><source src='${media}'></video>`)
                     } else {
-                        var thumb = $(this).data("thumb")
-                        var media = $(this).data("media")
+                        var thumb = $(e).data("thumb")
+                        var media = $(e).data("media")
                         $(this).replaceWith(`<img src="${thumb}" class="float-left mr-3 postmedia" data-media="${media}" data-thumb="${thumb}">`)
                     }
                 } else {
-                    if ($(this).data("media") == $(this).attr("src")) {
-                        $(this).attr("src", $(this).data("thumb"));
+                    if ($(e).data("media") == $(e).attr("src")) {
+                        $(e).attr("src", $(e).data("thumb"));
                     } else {
-                        $(this).attr("src", $(this).data("media"));
+                        $(e).attr("src", $(e).data("media"));
                     }
                 }
-            })
+            }
 
-            $(".replyID").click(function() {
+            function reply(e) {
                 $("#replyBox").removeAttr("hidden");
-                if ($(this).attr('id') != "op") {
-                    $("#replyText").append(">>" + $(this).attr('id') + "&#13;&#10;");
+                if ($(e).attr('id') != "op") {
+                    $("#replyText").append(">>" + $(e).attr('id') + "&#13;&#10;");
                 }
-            });
+            }
 
             function closeReply(element) {
                 $(element).attr("hidden", "hidden");
                 //$("#replyText").val(""); for some reason, when i have this and they open a new text box, text wont be appended
             }
-
-            $(document).ready(function() {
-                $.each($(".bodyText"), function(index, element) {
-                    // do greentexts
-                    text = $(element).text().split("\n");
-                    for(i = 0; i < text.length; i++) {
-                        if (text[i].length > 2) {
-                            if (text[i].indexOf("&gt;") == 0 && text[i].substring(4,8) != "&gt;") {
-                                text[i] = "<div class='text-success'>" + text[i] + "</div>";
-                            }
-                        }
-                    }
-                    var newtext = text.join("<br/>")
-                    $(element).html(newtext);
-
-                    // hyperlinks
-                    var urlRegex = /(https?:\/\/[^\s]+)/g;
-                    text = $(element).text();
-                    $(element).html(text.replace(urlRegex, function(url) {
-                        return '<a target="_blank" href="' + url + '">' + url + '</a>';
-                    }));
-                });
-            });
         </script>
 
 {% endblock %}

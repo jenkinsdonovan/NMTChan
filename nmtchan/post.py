@@ -18,14 +18,6 @@ from datetime import datetime
 
 import re
 
-html_escape_table = {
-    "&": "&amp;",
-    '"': "&quot;",
-    "'": "&apos;",
-    ">": "&gt;",
-    "<": "&lt;",
-}
-
 class ThreadForm(FlaskForm):
     rules = BooleanField('I have read the rules', validators=[DataRequired()])
     body = StringField('Body', validators=[], widget=TextArea())
@@ -50,19 +42,11 @@ def handlePost(board, post):
         form.media(accept='image/*,.webm')
         db = database.get_db()
 
-        replies = db.execute('SELECT * FROM post WHERE parent = ?', (post,)).fetchall()
-        replies = [dict(i) for i in replies]
-
-        for reply in replies:
-            childrenIDs = db.execute('SELECT * FROM reply WHERE opID = ?', (reply["id"],)).fetchall()
-            childrenIDs = [dict(i) for i in childrenIDs]
-            reply["body"] = "".join(html_escape_table.get(c,c) for c in reply["body"])
-
         post = db.execute('SELECT * FROM post WHERE id = ?', (post,)).fetchone()
         post = dict(post)
-        post["body"] = "".join(html_escape_table.get(c,c) for c in post["body"])
+        post["body"] = utils.sanitize(post["body"])
 
-        return render_template("post.html", boardname=board, post=post, replies=replies, form=form)
+        return render_template("post.html", boardname=board, post=post, form=form)
 
     if not form.validate_on_submit():
         flash("invalid form fields")

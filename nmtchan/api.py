@@ -3,7 +3,7 @@
     the overboard.
 """
 from flask import Blueprint, request
-from nmtchan import auth
+from nmtchan import auth, utils
 from nmtchan import db as database
 import json, collections
 
@@ -36,8 +36,8 @@ def apiRecents():
 
     posts = [dict(i) for i in posts]
     for post in posts:
-        post["subject"] = "".join(html_escape_table.get(c,c) for c in post["subject"])
-        post["body"] = "".join(html_escape_table.get(c,c) for c in post["body"])
+        post["subject"] = utils.sanitize(post["subject"])
+        post["body"] = utils.sanitize(post["body"])
 
     if nsfw != "1":
         query = "SELECT * FROM board WHERE category=?"
@@ -46,6 +46,32 @@ def apiRecents():
         posts = [i for i in posts if i["board"] not in boards]
     
     return {"status": "success", "data": json.dumps(posts)}
+
+@bp.route("/post", methods=['GET'])
+def getPost():
+    db = database.get_db()
+    post = request.args.get("id", "0")
+
+    if post == "0":
+        return {"status": "failure", "data": ""}
+
+    # get op
+    query = "SELECT * FROM post WHERE id=?"
+    op = db.execute(query, (post,)).fetchone()
+    op = dict(op)
+    op["subject"] = utils.sanitize(op["subject"])
+    op["body"] = utils.sanitize(op["body"])
+
+    # get replies
+    query = "SELECT * FROM post WHERE parent=?"
+    replies = db.execute(query, (post,)).fetchall()
+    replies = [dict(i) for i in replies]
+    for r in replies:
+        r["body"] = utils.sanitize(r["body"])
+
+    data = {"op": op, "replies": replies}
+
+    return {"status": "success", "data": json.dumps(data)}
 
 @bp.route("/boards", methods=['GET'])
 def getBoards():
