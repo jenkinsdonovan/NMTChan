@@ -74,6 +74,7 @@ def handlePost(board, post):
     parent = post
     created = datetime.now().timestamp()
 
+
     if not rules:
         flash("rules required")
         return redirect(request.url)
@@ -90,9 +91,11 @@ def handlePost(board, post):
     query = "INSERT INTO post (parent, board, subject, body, thumb, media, last_updated, created) \
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     t = db.execute(query, (parent, board, "", body, thumbname, medianame, created, created))
+    db.commit()
 
     query = "UPDATE post SET last_updated = ? WHERE id = ?"
     db.execute(query, (created, parent))
+    db.commit()
 
     replies = re.findall(">>\d*", body)
     replies = [i.split(">")[-1] for i in replies]

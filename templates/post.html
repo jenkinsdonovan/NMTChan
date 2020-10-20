@@ -26,9 +26,9 @@
                 <div id="op" class="col text-wrap">
                     <img src="{{ post.thumb }}" class="float-left mr-3 postmedia" data-media="{{ post.media }}" data-thumb="{{ post.thumb }}">
                     <div class="content float-left">
-                        <h1>
-                            {{ post.subject }} No. <a id="op" class="replyID">{{ post.id }}</a>
-                        </h1>
+                        <h3>
+                            {{ post.subject }} <small class="text-info">No. <a id="op" class="replyID">{{ post.id }}</a></small>
+                        </h3>
                         <div class="text-wrap bodyText">{{ post.body }}</div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                         {% endif %}
                         <div class="content float-left">
                             <h3>
-                                No. <a id="{{ reply.id }}" class="replyID">{{ reply.id }}</a>
+                                <small class="text-info">No. <a id="{{ reply.id }}" class="replyID">{{ reply.id }}</a></small>
                             </h3>
                             <div class="text-wrap bodyText">{{ reply.body }}</div>
                         </div>
