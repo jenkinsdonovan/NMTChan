@@ -114,8 +114,8 @@
             }
 
             $(document).ready(function() {
-                // do greentexts
                 $.each($(".bodyText"), function(index, element) {
+                    // do greentexts
                     text = $(element).text().split("\n");
                     for(i = 0; i < text.length; i++) {
                         if (text[i].length > 2) {
@@ -126,6 +126,13 @@
                     }
                     var newtext = text.join("<br/>")
                     $(element).html(newtext);
+
+                    // hyperlinks
+                    var urlRegex = /(https?:\/\/[^\s]+)/g;
+                    text = $(element).text();
+                    $(element).html(text.replace(urlRegex, function(url) {
+                        return '<a target="_blank" href="' + url + '">' + url + '</a>';
+                    }));
                 });
             });
         </script>
