@@ -42,6 +42,10 @@ def handlePost(board, post):
         form.media(accept='image/*,.webm')
         db = database.get_db()
 
+        check = db.execute('SELECT * FROM board WHERE link = ?', (board,)).fetchone()
+        if check is None:
+            return redirect("/")
+
         post = db.execute('SELECT * FROM post WHERE id = ?', (post,)).fetchone()
         post = dict(post)
         post["body"] = utils.sanitize(post["body"])
