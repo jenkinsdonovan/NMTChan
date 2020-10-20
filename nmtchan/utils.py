@@ -68,7 +68,5 @@ def sanitize(text):
         "<": "&lt;",
     }
     
-    print("before:", text)
     text = html.escape(text)
-    print("after:", text)
     return text

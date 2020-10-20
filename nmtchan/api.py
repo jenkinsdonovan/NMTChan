@@ -28,10 +28,10 @@ def apiRecents():
     posts = []
     if board == "all":
         nsfw = "0"
-        query = "SELECT * FROM post WHERE parent=0 ORDER BY last_updated ASC LIMIT ?"
+        query = "SELECT * FROM post WHERE parent=0 ORDER BY last_updated DESC LIMIT ?"
         posts = db.execute(query, (limit,)).fetchall()
     else:
-        query = "SELECT * FROM post WHERE parent=0 AND board=? ORDER BY last_updated ASC LIMIT ?"
+        query = "SELECT * FROM post WHERE parent=0 AND board=? ORDER BY last_updated DESC LIMIT ?"
         posts = db.execute(query, (board,limit)).fetchall()
 
     posts = [dict(i) for i in posts]
