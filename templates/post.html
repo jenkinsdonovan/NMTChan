@@ -110,11 +110,11 @@
                 for(i = 0; i < text.length; i++) {
                     if (text[i].length > 2) {
                         if (text[i].indexOf("&gt;") == 0 && text[i].substring(4,8) != "&gt;") {
-                            text[i] = "<div class='text-success'>" + text[i] + "</div>";
+                            text[i] = "<p class='text-success mb-0'>" + text[i] + "</p>";
                         }
                     }
                 }
-                return text.join("<br/>")
+                return text.join("")
             }
 
             function convertHyperlink(text) {
