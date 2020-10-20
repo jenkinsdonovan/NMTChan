@@ -48,6 +48,7 @@ def apiRecents():
     return {"status": "success", "data": json.dumps(posts)}
 
 @bp.route("/post", methods=['GET'])
+@auth.require_login
 def getPost():
     db = database.get_db()
     post = request.args.get("id", "0")
@@ -74,6 +75,7 @@ def getPost():
     return {"status": "success", "data": json.dumps(data)}
 
 @bp.route("/boards", methods=['GET'])
+@auth.require_login
 def getBoards():
     db = database.get_db()
     items = db.execute('SELECT * FROM board').fetchall()
