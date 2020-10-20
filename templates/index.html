@@ -18,9 +18,9 @@
         <main role="main" class="inner cover bg-dark mt-2">
             <h2 class="cover-heading pt-1"><u>Account</u></h1>
             <div class="row justify-content-center">
-                <button type="button" class="col-md-2 btn btn-primary m-2" onclick="location.href = '/logout'">logout</button>
+                <button type="button" class="col-md-2 btn-sm btn-secondary m-2" onclick="location.href = '/logout'">logout</button>
                 {% if level|string() == 1|string() %}
-                    <button type="button" class="col-md-2 btn btn-primary m-2" onclick="location.href = '/mod/'">mod</button>
+                    <button type="button" class="col-md-2 btn-sm btn-secondary m-2" onclick="location.href = '/mod/'">mod</button>
                 {% endif %}
             </div>
         </main>
@@ -32,12 +32,11 @@
 
             <small>
                 <h6 class="mb-0">TODO</h6>
-                <p class="mb-0">Show which comment a reply is made to</p>
-                <p class="mb-0">Allow a comment to be a reply to multiple comments</p>
+                <p class="mb-0">Fix spacing issues on OP posts</p>
+                <p class="mb-0">Show which replies are made to a post</p>
+                <p class="mb-0">Show "reply to thread" button</p>
                 <p class="mb-0">Make webms collapsable</p>
                 <p class="mb-0">Show expanded media on hover</p>
-                <p class="mb-0">Make body input in forms bigger and support newlines (so, textarea)</p>
-                <p class="mb-0">Support greentext</p>
                 <p class="mb-0">Show media metadata near the item</p>
                 <p class="mb-0">Rate limiting</p>
                 <p class="mb-0">Better report login/signup errors</p>

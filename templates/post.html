@@ -19,10 +19,38 @@
             {% endfor %}
         {% endif %}{% endwith %}
 
-        <form action="/{{ boardname }}/{{ post.id }}/" method="POST" enctype="multipart/form-data" class="bg-dark" id="replyBox" hidden>
-            <!--div class="modal-header">
-                <h1>New Reply</h1>
-            </div-->
+        <!-- content -->
+        <main role="main" class="row inner thread cover m-2 text-left" id="thread">
+            <!-- op -->
+            <div class="row">
+                <div id="op" class="col text-wrap">
+                    <img src="{{ post.thumb }}" class="float-left mr-3 postmedia" data-media="{{ post.media }}" data-thumb="{{ post.thumb }}">
+                    <div class="content float-left">
+                        <h1>
+                            {{ post.subject }} No. <a id="op" class="replyID">{{ post.id }}</a>
+                        </h1>
+                        <div class="text-wrap bodyText">{{ post.body }}</div>
+                    </div>
+                </div>
+            </div>
+            {% for reply in replies %}
+                <div class="row reply m-1 ml-3 w-100">
+                    <div id="re" class="col-auto text-wrap border border-dark p-2 pr-5">
+                        {% if reply.thumb %}
+                        <img src="{{ reply.thumb }}" class="float-left mr-3 postmedia" data-media="{{ reply.media }}" data-thumb="{{ reply.thumb }}">
+                        {% endif %}
+                        <div class="content float-left">
+                            <h3>
+                                No. <a id="{{ reply.id }}" class="replyID">{{ reply.id }}</a>
+                            </h3>
+                            <div class="text-wrap bodyText">{{ reply.body }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </main>
+
+        <form action="/{{ boardname }}/{{ post.id }}/" method="POST" enctype="multipart/form-data" class="bg-dark col-sm-3" id="replyBox" hidden>
             <div class="modal-body">
                 <div class="form-check">
                 {{ form.rules() }} 
@@ -41,37 +69,6 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
-
-        <!-- content -->
-        <main role="main" class="row inner thread cover m-2 text-left" id="thread">
-            <!-- op -->
-            <div class="row">
-                <div id="op" class="col text-wrap">
-                    <img src="{{ post.thumb }}" class="float-left mr-3 postmedia" data-media="{{ post.media }}" data-thumb="{{ post.thumb }}">
-                    <div class="content float-left">
-                        <h1>
-                            {{ post.subject }} No. <a href="#" id="{{ post.id }}" class="replyID">{{ post.id }}</a>
-                        </h1>
-                        <div class="text-wrap">{{ post.body }}</div>
-                    </div>
-                </div>
-            </div>
-            {% for reply in replies %}
-                <div class="row reply m-3 w-100">
-                    <div id="re" class="col-auto text-wrap border border-dark p-2 pr-5">
-                        {% if reply.thumb %}
-                        <img src="{{ reply.thumb }}" class="float-left mr-3 postmedia" data-media="{{ reply.media }}" data-thumb="{{ reply.thumb }}">
-                        {% endif %}
-                        <div class="content float-left">
-                            <h3>
-                                No. <a href="#" id="{{ reply.id }}" class="replyID">{{ reply.id }}</a>
-                            </h3>
-                            <div class="text-wrap">{{ reply.body }}</div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </main>
 
         <script>
             $(document).on("click", ".post", function () {
@@ -113,7 +110,9 @@
 
             $(".replyID").click(function() {
                 $("#replyBox").removeAttr("hidden");
-                $("#replyText").append(">>" + $(this).attr('id') + "&#13;&#10;");
+                if ($(this).attr('id') != "op") {
+                    $("#replyText").append(">>" + $(this).attr('id') + "&#13;&#10;");
+                }
             });
 
             function closeReply(element) {
@@ -121,30 +120,21 @@
                 //$("#replyText").val(""); for some reason, when i have this and they open a new text box, text wont be appended
             }
 
-            /*
-            function toggle(i, media, thumb) {
-                var ogtag = `<img src="${thumb}" class="float-left mr-3" onclick="toggle(this, '${media}', '${thumb}');">`
-                console.log($(i))
-
-                var src = $(i).attr("src");
-                if (media.indexOf(".webm") == -1) {
-                    if (src.indexOf("_thumb") == -1) {
-                        $(i).attr("src", thumb)
-                    } else {
-                        $(i).attr("src", media)
+            $(document).ready(function() {
+                // do greentexts
+                $.each($(".bodyText"), function(index, element) {
+                    text = $(element).text().split("\n");
+                    for(i = 0; i < text.length; i++) {
+                        if (text[i].length > 2) {
+                            if (text[i].indexOf("&gt;") == 0 && text[i].substring(4,8) != "&gt;") {
+                                text[i] = "<div class='text-success'>" + text[i] + "</div>";
+                            }
+                        }
                     }
-                } else {
-                    if (src.indexOf("_thumb") == -1) {
-                        console.log("replacing with media")
-                        //$(i).replaceWith(`<video controls onclick="toggle(this, '${media}', '${thumb}');><source src='${media}' type="video/webm"></video>`)
-                        $(i).replaceWith("test");
-                    } else {
-                        console.log("replacing with thumb")
-                        $(i).replaceWith(ogtag)
-                    }
-                }
-            }
-            */
+                    var newtext = text.join("<br/>")
+                    $(element).html(newtext);
+                });
+            });
         </script>
 
 {% endblock %}

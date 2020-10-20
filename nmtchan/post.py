@@ -16,6 +16,16 @@ from wtforms.widgets import TextArea
 
 from datetime import datetime
 
+import re
+
+html_escape_table = {
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&apos;",
+    ">": "&gt;",
+    "<": "&lt;",
+}
+
 class ThreadForm(FlaskForm):
     rules = BooleanField('I have read the rules', validators=[DataRequired()])
     body = StringField('Body', validators=[], widget=TextArea())
@@ -46,8 +56,12 @@ def handlePost(board, post):
         for reply in replies:
             childrenIDs = db.execute('SELECT * FROM reply WHERE opID = ?', (reply["id"],)).fetchall()
             childrenIDs = [dict(i) for i in childrenIDs]
+            reply["body"] = "".join(html_escape_table.get(c,c) for c in reply["body"])
 
         post = db.execute('SELECT * FROM post WHERE id = ?', (post,)).fetchone()
+        post = dict(post)
+        post["body"] = "".join(html_escape_table.get(c,c) for c in post["body"])
+
         return render_template("post.html", boardname=board, post=post, replies=replies, form=form)
 
     if not form.validate_on_submit():
@@ -80,10 +94,11 @@ def handlePost(board, post):
     query = "UPDATE post SET last_updated = ? WHERE id = ?"
     db.execute(query, (created, parent))
 
-    """ for replyTo, parse the body and search for >>id. add replies
-    query = "INSERT INTO reply (opID, replyID) VALUES (?, ?)"
-    db.execute(query, (replyTo, t.lastrowid))
-    db.commit()
-    """
+    replies = re.findall(">>\d*", body)
+    replies = [i.split(">")[-1] for i in replies]
+    for reply in replies:
+        query = "INSERT INTO reply (opID, replyID) VALUES (?, ?)"
+        db.execute(query, (t.lastrowid, reply))
+        db.commit()
 
     return redirect(request.url)
