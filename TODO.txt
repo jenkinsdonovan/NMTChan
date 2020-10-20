@@ -1,0 +1,8 @@
+Fix spacing issues on OP posts
+Show which replies are made to a post
+Show "reply to thread" button
+Make webms collapsable
+Show expanded media on hover
+Show media metadata near the item
+Rate limiting
+Better report login/signup errors
