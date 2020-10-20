@@ -29,7 +29,11 @@
         <!-- announcements -->
         <main role="main" class="inner cover bg-dark mt-2">
             <h2 class="cover-heading pt-1"><u>Announcements</u></h1>
-            <p class="pb-1">Silence Wench. I do not wish to be horny anymore. I just want to be happy.</p>
+            <p class="pb-1">
+                {% if commit %}
+                    Last git commit: {{ commit.message }}
+                {% endif %}
+            </p>
         </main>
 
         <!-- boards -->
